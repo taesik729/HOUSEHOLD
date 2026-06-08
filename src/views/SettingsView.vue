@@ -40,9 +40,9 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">비밀번호 확인</label>
-          <input v-model="confirmPw" type="password" class="form-input"
-            placeholder="비밀번호를 입력하세요" />
+          <label class="form-label">확인을 위해 <strong style="color:var(--expense)">탈퇴</strong> 라고 입력하세요</label>
+          <input v-model="confirmPw" type="text" class="form-input"
+            placeholder="탈퇴" />
         </div>
 
         <p v-if="withdrawError" style="font-size:13px;color:var(--expense)">{{ withdrawError }}</p>
@@ -82,23 +82,12 @@ async function logout() {
 
 async function withdraw() {
   withdrawError.value = ''
-  if (!confirmPw.value) {
-    withdrawError.value = '비밀번호를 입력해주세요.'; return
+  if (confirmPw.value.trim() !== '탈퇴') {
+    withdrawError.value = '"탈퇴" 라고 정확히 입력해주세요.'; return
   }
   withdrawing.value = true
 
-  // 1. 비밀번호 재확인 (재로그인)
-  const { error: signInErr } = await supabase.auth.signInWithPassword({
-    email: auth.user.email,
-    password: confirmPw.value
-  })
-  if (signInErr) {
-    withdrawError.value = '비밀번호가 올바르지 않습니다.'
-    withdrawing.value = false
-    return
-  }
-
-  // 2. 데이터 삭제
+  // 1. 데이터 삭제
   await supabase.from('household_ledger').delete().eq('user_id', auth.user.id)
 
   // 3. 계정 삭제
