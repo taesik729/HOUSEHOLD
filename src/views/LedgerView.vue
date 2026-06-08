@@ -74,12 +74,13 @@ function prevMonth() { if (month.value===1){month.value=12;year.value--}else mon
 function nextMonth() { if (month.value===12){month.value=1;year.value++}else month.value++ }
 
 async function load() {
+  if (!auth.user?.id) { rows.value = []; return }
   loading.value = true
   const from = `${year.value}-${String(month.value).padStart(2,'0')}-01`
   const lastDay = new Date(year.value, month.value, 0).getDate()
   const to   = `${year.value}-${String(month.value).padStart(2,'0')}-${lastDay}`
   const { data } = await supabase.from('household_ledger').select('*')
-    .eq('user_id', auth.user?.id)
+    .eq('user_id', auth.user.id)
     .gte('date', from).lte('date', to)
     .order('date', { ascending: false })
   rows.value = data ?? []

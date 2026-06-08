@@ -94,6 +94,7 @@ const balance      = computed(() => totalIncome.value - totalExpense.value)
 const recent       = computed(() => [...rows.value].sort((a,b) => b.date.localeCompare(a.date)).slice(0, 5))
 
 async function load() {
+  if (!auth.user?.id) { rows.value = []; return }
   loading.value = true
   const from = `${year.value}-${String(month.value).padStart(2,'0')}-01`
   const lastDay = new Date(year.value, month.value, 0).getDate()
@@ -101,7 +102,7 @@ async function load() {
   const { data } = await supabase
     .from('household_ledger')
     .select('*')
-    .eq('user_id', auth.user?.id)
+    .eq('user_id', auth.user.id)
     .gte('date', from).lte('date', to)
     .order('date', { ascending: false })
   rows.value = data ?? []
