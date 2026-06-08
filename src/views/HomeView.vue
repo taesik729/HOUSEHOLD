@@ -78,9 +78,11 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import LedgerModal from '@/components/LedgerModal.vue'
 import { supabase } from '@/supabase/client'
 import { useAuthStore } from '@/stores/auth'
-import { getCatInfo, formatDate } from '@/utils/category.js'
+import { formatDate } from '@/utils/category.js'
+import { useCategories } from '@/composables/useCategories.js'
 
 const auth = useAuthStore()
+const { categories, fetchCategories, getCatInfo } = useCategories()
 const now   = new Date()
 const year  = ref(now.getFullYear())
 const month = ref(now.getMonth() + 1)
@@ -133,5 +135,5 @@ function closeModal() { showModal.value = false; editRow.value = null }
 function onSaved()    { closeModal(); load() }
 
 watch([year, month], load)
-onMounted(load)
+onMounted(async () => { await fetchCategories(); await load() })
 </script>

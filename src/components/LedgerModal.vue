@@ -36,10 +36,10 @@
         <select v-model="form.category" class="form-input">
           <option value="">선택</option>
           <template v-if="form.type==='income'">
-            <option v-for="c in INCOME_CATS" :key="c">{{ c }}</option>
+            <option v-for="c in incomeCats" :key="c.id" :value="c.name">{{ c.icon }} {{ c.name }}</option>
           </template>
           <template v-else>
-            <option v-for="c in EXPENSE_CATS" :key="c">{{ c }}</option>
+            <option v-for="c in expenseCats" :key="c.id" :value="c.name">{{ c.icon }} {{ c.name }}</option>
           </template>
         </select>
       </div>
@@ -62,16 +62,20 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { supabase } from '@/supabase/client'
 import { useAuthStore } from '@/stores/auth'
+import { useCategories } from '@/composables/useCategories.js'
 
 const props = defineProps({ editRow: { type: Object, default: null } })
 const emit  = defineEmits(['close', 'saved'])
 const auth  = useAuthStore()
 
-const INCOME_CATS  = ['농업수입', '급여·연금', '임대·이자', '용돈', '기타수입']
-const EXPENSE_CATS = ['식비', '의료비', '교육비', '공과금·통신', '교통·유류', '의류·잡화', '경조사', '외식·여가', '기타지출']
+const { categories, fetchCategories, byType } = useCategories()
+const incomeCats  = computed(() => byType('income'))
+const expenseCats = computed(() => byType('expense'))
+
+onMounted(fetchCategories)
 
 const today = new Date().toISOString().slice(0, 10)
 const form = ref({ id: null, type: 'expense', date: today, amount: '', category: '', memo: '' })
