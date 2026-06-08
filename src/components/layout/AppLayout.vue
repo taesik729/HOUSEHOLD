@@ -1,21 +1,14 @@
 <template>
   <div class="layout">
-    <!-- 상단바 -->
     <header class="topbar">
-      <div>
-        <div class="topbar-title">🏠 우리집 가계부</div>
-      </div>
-      <button class="icon-btn" style="color:#fff;border-color:rgba(255,255,255,.2)" @click="logout">
-        <i class="ti ti-logout"></i>
+      <div class="topbar-title">가계부</div>
+      <button class="icon-btn" @click="logout" style="border:none">
+        <i class="ti ti-logout" style="color:var(--text-hint)"></i>
       </button>
     </header>
-
-    <!-- 콘텐츠 -->
     <main class="content">
       <slot />
     </main>
-
-    <!-- 하단 탭바 -->
     <nav class="bottom-nav">
       <RouterLink v-for="item in NAV" :key="item.path"
         :to="item.path" class="bn-item" active-class="active">

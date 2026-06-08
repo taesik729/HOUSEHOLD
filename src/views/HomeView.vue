@@ -1,107 +1,120 @@
 <template>
   <AppLayout>
     <div class="page">
-      <!-- 월 네비 -->
-      <div class="month-nav">
-        <button class="mn-btn" @click="prevMonth"><i class="ti ti-chevron-left"></i></button>
-        <div class="month-label">{{ year }}년 {{ month }}월</div>
-        <button class="mn-btn" @click="nextMonth"><i class="ti ti-chevron-right"></i></button>
+
+      <!-- 월 헤더 -->
+      <div class="month-header">
+        <div class="month-nav">
+          <button class="mn-btn" @click="prevMonth"><i class="ti ti-chevron-left"></i></button>
+          <div class="month-label">{{ year }}년 {{ month }}월</div>
+          <button class="mn-btn" @click="nextMonth"><i class="ti ti-chevron-right"></i></button>
+        </div>
+        <div class="summary-row">
+          <div class="sum-box expense">
+            <div class="sum-box-label">지출</div>
+            <div class="sum-box-val">{{ totalExpense.toLocaleString() }}원</div>
+          </div>
+          <div class="sum-box income">
+            <div class="sum-box-label">수입</div>
+            <div class="sum-box-val">{{ totalIncome.toLocaleString() }}원</div>
+          </div>
+        </div>
+        <div class="balance-row">
+          <span class="balance-label">잔액</span>
+          <span class="balance-val">{{ balance.toLocaleString() }}원</span>
+        </div>
       </div>
 
-      <!-- 요약 카드 -->
-      <div class="summary-grid">
-        <div class="sum-card income">
-          <div class="sum-label"><i class="ti ti-trending-up"></i> 수입</div>
-          <div class="sum-val">{{ totalIncome.toLocaleString() }}<span class="sum-unit">원</span></div>
-        </div>
-        <div class="sum-card expense">
-          <div class="sum-label"><i class="ti ti-trending-down"></i> 지출</div>
-          <div class="sum-val">{{ totalExpense.toLocaleString() }}<span class="sum-unit">원</span></div>
-        </div>
-        <div class="sum-card balance">
-          <div class="sum-label"><i class="ti ti-wallet"></i> 잔액</div>
-          <div class="sum-val">{{ balance.toLocaleString() }}<span class="sum-unit">원</span></div>
-        </div>
+      <!-- 내역 -->
+      <div v-if="loading" class="loading">불러오는 중...</div>
+      <div v-else-if="!rows.length" class="empty">
+        <i class="ti ti-receipt-off"></i>
+        <p>이번 달 내역이 없습니다</p>
       </div>
-
-      <!-- 최근 내역 -->
-      <div class="card">
-        <div class="card-title"><i class="ti ti-clock"></i> 최근 내역</div>
-        <div v-if="loading" class="loading">불러오는 중...</div>
-        <div v-else-if="!recent.length" class="empty">
-          <i class="ti ti-receipt-off"></i>
-          <p>이번 달 내역이 없습니다</p>
-        </div>
-        <template v-else>
-          <div v-for="r in recent" :key="r.id" class="ledger-item">
-            <div :class="['li-dot', r.type]"></div>
-            <div class="li-body">
-              <div class="li-cat">{{ r.category }}</div>
-              <div v-if="r.memo" class="li-memo">{{ r.memo }}</div>
+      <template v-else>
+        <div v-for="group in grouped" :key="group.date" class="date-group">
+          <!-- 날짜 헤더 -->
+          <div class="date-group-hd">
+            <span>{{ formatDate(group.date) }}</span>
+            <span class="date-group-total">
+              <span v-if="group.income" style="color:var(--income)">+{{ group.income.toLocaleString() }}</span>
+              <span v-if="group.income && group.expense"> · </span>
+              <span v-if="group.expense" style="color:var(--expense)">-{{ group.expense.toLocaleString() }}</span>
+            </span>
+          </div>
+          <!-- 내역 아이템 -->
+          <div v-for="r in group.items" :key="r.id" class="tx-item" @click="openEdit(r)">
+            <div class="tx-icon" :style="{background: getCatInfo(r.category).color + '20'}">
+              {{ getCatInfo(r.category).icon }}
             </div>
-            <div class="li-right">
-              <div :class="['li-amount', r.type]">
-                {{ r.type === 'income' ? '+' : '-' }}{{ r.amount.toLocaleString() }}원
+            <div class="tx-body">
+              <div class="tx-name">{{ r.category }}</div>
+              <div v-if="r.memo" class="tx-memo">{{ r.memo }}</div>
+            </div>
+            <div class="tx-right">
+              <div :class="['tx-amount', r.type]">
+                {{ r.type==='income' ? '+' : '-' }}{{ r.amount.toLocaleString() }}원
               </div>
-              <div class="li-date">{{ r.date }}</div>
+            </div>
+            <div class="tx-actions" @click.stop>
+              <button class="icon-btn del" @click="remove(r.id)"><i class="ti ti-trash"></i></button>
             </div>
           </div>
-          <RouterLink to="/ledger" style="display:block;text-align:center;margin-top:12px;font-size:13px;color:var(--primary-bright);text-decoration:none">
-            전체 내역 보기 →
-          </RouterLink>
-        </template>
-      </div>
+        </div>
+      </template>
+
     </div>
 
-    <!-- FAB -->
     <button class="btn-fab" @click="showModal = true">
       <i class="ti ti-plus"></i>
     </button>
-
-    <!-- 입력 모달 -->
-    <LedgerModal v-if="showModal" @close="showModal = false" @saved="onSaved" />
+    <LedgerModal v-if="showModal" :edit-row="editRow" @close="closeModal" @saved="onSaved" />
   </AppLayout>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { RouterLink } from 'vue-router'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import LedgerModal from '@/components/LedgerModal.vue'
 import { supabase } from '@/supabase/client'
 import { useAuthStore } from '@/stores/auth'
+import { getCatInfo, formatDate } from '@/utils/category.js'
 
 const auth = useAuthStore()
-const now = new Date()
+const now   = new Date()
 const year  = ref(now.getFullYear())
 const month = ref(now.getMonth() + 1)
 const rows    = ref([])
 const loading = ref(false)
 const showModal = ref(false)
+const editRow   = ref(null)
 
-function prevMonth() {
-  if (month.value === 1) { month.value = 12; year.value-- }
-  else month.value--
-}
-function nextMonth() {
-  if (month.value === 12) { month.value = 1; year.value++ }
-  else month.value++
-}
+function prevMonth() { if (month.value===1){month.value=12;year.value--}else month.value-- }
+function nextMonth() { if (month.value===12){month.value=1;year.value++}else month.value++ }
 
-const totalIncome  = computed(() => rows.value.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0))
-const totalExpense = computed(() => rows.value.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0))
+const totalIncome  = computed(() => rows.value.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0))
+const totalExpense = computed(() => rows.value.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0))
 const balance      = computed(() => totalIncome.value - totalExpense.value)
-const recent       = computed(() => [...rows.value].sort((a,b) => b.date.localeCompare(a.date)).slice(0, 5))
+
+// 날짜별 그룹핑
+const grouped = computed(() => {
+  const map = {}
+  rows.value.forEach(r => {
+    if (!map[r.date]) map[r.date] = { date: r.date, items: [], income: 0, expense: 0 }
+    map[r.date].items.push(r)
+    if (r.type === 'income')  map[r.date].income  += r.amount
+    if (r.type === 'expense') map[r.date].expense += r.amount
+  })
+  return Object.values(map).sort((a,b) => b.date.localeCompare(a.date))
+})
 
 async function load() {
   if (!auth.user?.id) { rows.value = []; return }
   loading.value = true
   const from = `${year.value}-${String(month.value).padStart(2,'0')}-01`
   const lastDay = new Date(year.value, month.value, 0).getDate()
-  const to   = `${year.value}-${String(month.value).padStart(2,'0')}-${lastDay}`
-  const { data } = await supabase
-    .from('household_ledger')
-    .select('*')
+  const to = `${year.value}-${String(month.value).padStart(2,'0')}-${lastDay}`
+  const { data } = await supabase.from('household_ledger').select('*')
     .eq('user_id', auth.user.id)
     .gte('date', from).lte('date', to)
     .order('date', { ascending: false })
@@ -109,7 +122,15 @@ async function load() {
   loading.value = false
 }
 
-function onSaved() { showModal.value = false; load() }
+async function remove(id) {
+  if (!confirm('삭제하시겠습니까?')) return
+  await supabase.from('household_ledger').delete().eq('id', id)
+  load()
+}
+
+function openEdit(r)  { editRow.value = { ...r }; showModal.value = true }
+function closeModal() { showModal.value = false; editRow.value = null }
+function onSaved()    { closeModal(); load() }
 
 watch([year, month], load)
 onMounted(load)
