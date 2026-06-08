@@ -1,0 +1,13 @@
+{
+  "name": "우리집 가계부",
+  "short_name": "가계부",
+  "description": "가정 수입·지출 관리",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1E3A5F",
+  "theme_color": "#1E3A5F",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
