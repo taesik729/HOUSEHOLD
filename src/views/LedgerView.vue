@@ -76,7 +76,8 @@ function nextMonth() { if (month.value===12){month.value=1;year.value++}else mon
 async function load() {
   loading.value = true
   const from = `${year.value}-${String(month.value).padStart(2,'0')}-01`
-  const to   = `${year.value}-${String(month.value).padStart(2,'0')}-31`
+  const lastDay = new Date(year.value, month.value, 0).getDate()
+  const to   = `${year.value}-${String(month.value).padStart(2,'0')}-${lastDay}`
   const { data } = await supabase.from('household_ledger').select('*')
     .gte('date', from).lte('date', to)
     .order('date', { ascending: false })
