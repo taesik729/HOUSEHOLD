@@ -1,0 +1,94 @@
+<template>
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-logo-icon">🏠</div>
+      <h1>우리집 가계부</h1>
+      <p>가정 수입·지출 관리</p>
+    </div>
+    <div class="login-card">
+      <div class="form-group">
+        <label class="form-label">이메일</label>
+        <input v-model="email" class="form-input" type="email" placeholder="이메일 입력"
+          @keyup.enter="submit" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">비밀번호</label>
+        <input v-model="pw" class="form-input" type="password" placeholder="비밀번호 입력"
+          @keyup.enter="submit" autocomplete="current-password" />
+      </div>
+
+      <p v-if="message" :class="['login-msg', isError ? 'error' : 'success']">{{ message }}</p>
+
+      <button class="btn-primary" @click="submit" :disabled="auth.loading">
+        {{ auth.loading ? '처리 중...' : (isSignup ? '회원가입' : '로그인') }}
+      </button>
+
+      <button class="toggle-btn" @click="toggle">
+        {{ isSignup ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입' }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const auth     = useAuthStore()
+const router   = useRouter()
+const email    = ref('')
+const pw       = ref('')
+const isSignup = ref(false)
+const message  = ref('')
+const isError  = ref(false)
+
+function toggle() {
+  isSignup.value = !isSignup.value
+  message.value  = ''
+}
+
+async function submit() {
+  if (!email.value || !pw.value) {
+    message.value = '이메일과 비밀번호를 입력해주세요.'; isError.value = true; return
+  }
+  message.value = ''
+
+  if (isSignup.value) {
+    const ok = await auth.signup(email.value.trim(), pw.value)
+    if (ok) {
+      message.value = '✅ 가입 완료! 이메일 인증 후 로그인해주세요.'
+      isError.value  = false
+      isSignup.value = false
+    } else {
+      message.value = auth.error; isError.value = true
+    }
+  } else {
+    const ok = await auth.login(email.value.trim(), pw.value)
+    if (ok) router.replace('/')
+    else { message.value = auth.error; isError.value = true }
+  }
+}
+</script>
+
+<style scoped>
+.toggle-btn {
+  background: none;
+  border: none;
+  color: var(--primary-bright);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px;
+  text-decoration: underline;
+  width: 100%;
+}
+.login-msg {
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  text-align: center;
+}
+.login-msg.error   { background: var(--expense-light); color: var(--expense); }
+.login-msg.success { background: var(--income-light);  color: var(--income); }
+</style>

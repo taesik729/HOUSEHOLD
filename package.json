@@ -1,0 +1,22 @@
+{
+  "name": "household-budget",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite --port 3001",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "chart.js": "^4.4.0",
+    "pinia": "^2.1.7",
+    "vue": "^3.3.0",
+    "vue-chartjs": "^5.3.0",
+    "vue-router": "^4.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "vite": "^4.5.0"
+  }
+}
