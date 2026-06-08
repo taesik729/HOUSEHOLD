@@ -85,7 +85,7 @@ async function submit() {
   if (isSignup.value) {
     const ok = await auth.signup(email.value.trim(), pw.value)
     if (ok) {
-      message.value = '✅ 가입 완료! 이메일 인증 후 로그인해주세요.'
+      message.value = '✅ 가입 완료! 로그인해주세요.'
       isError.value  = false
       isSignup.value = false
     } else {
