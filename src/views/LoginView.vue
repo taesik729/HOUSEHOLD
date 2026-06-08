@@ -6,26 +6,52 @@
       <p>가정 수입·지출 관리</p>
     </div>
     <div class="login-card">
-      <div class="form-group">
-        <label class="form-label">이메일</label>
-        <input v-model="email" class="form-input" type="email" placeholder="이메일 입력"
-          @keyup.enter="submit" autocomplete="email" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">비밀번호</label>
-        <input v-model="pw" class="form-input" type="password" placeholder="비밀번호 입력"
-          @keyup.enter="submit" autocomplete="current-password" />
-      </div>
 
-      <p v-if="message" :class="['login-msg', isError ? 'error' : 'success']">{{ message }}</p>
+      <!-- 비밀번호 찾기 모드 -->
+      <template v-if="isForgot">
+        <div class="form-group">
+          <label class="form-label">가입한 이메일</label>
+          <input v-model="email" class="form-input" type="email" placeholder="이메일 입력"
+            @keyup.enter="sendReset" autocomplete="email" />
+        </div>
+        <p v-if="message" :class="['login-msg', isError ? 'error' : 'success']">{{ message }}</p>
+        <button class="btn-primary" @click="sendReset" :disabled="sending">
+          {{ sending ? '발송 중...' : '재설정 링크 발송' }}
+        </button>
+        <button class="toggle-btn" @click="isForgot = false; message = ''">
+          ← 로그인으로 돌아가기
+        </button>
+      </template>
 
-      <button class="btn-primary" @click="submit" :disabled="auth.loading">
-        {{ auth.loading ? '처리 중...' : (isSignup ? '회원가입' : '로그인') }}
-      </button>
+      <!-- 로그인 / 회원가입 모드 -->
+      <template v-else>
+        <div class="form-group">
+          <label class="form-label">이메일</label>
+          <input v-model="email" class="form-input" type="email" placeholder="이메일 입력"
+            @keyup.enter="submit" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <input v-model="pw" class="form-input" type="password" placeholder="비밀번호 입력"
+            @keyup.enter="submit" autocomplete="current-password" />
+        </div>
 
-      <button class="toggle-btn" @click="toggle">
-        {{ isSignup ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입' }}
-      </button>
+        <p v-if="message" :class="['login-msg', isError ? 'error' : 'success']">{{ message }}</p>
+
+        <button class="btn-primary" @click="submit" :disabled="auth.loading">
+          {{ auth.loading ? '처리 중...' : (isSignup ? '회원가입' : '로그인') }}
+        </button>
+
+        <div class="bottom-links">
+          <button class="toggle-btn" @click="toggle">
+            {{ isSignup ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입' }}
+          </button>
+          <button v-if="!isSignup" class="forgot-btn" @click="isForgot = true; message = ''">
+            비밀번호를 잊으셨나요?
+          </button>
+        </div>
+      </template>
+
     </div>
   </div>
 </template>
@@ -34,14 +60,17 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/supabase/client'
 
 const auth     = useAuthStore()
 const router   = useRouter()
 const email    = ref('')
 const pw       = ref('')
 const isSignup = ref(false)
+const isForgot = ref(false)
 const message  = ref('')
 const isError  = ref(false)
+const sending  = ref(false)
 
 function toggle() {
   isSignup.value = !isSignup.value
@@ -53,7 +82,6 @@ async function submit() {
     message.value = '이메일과 비밀번호를 입력해주세요.'; isError.value = true; return
   }
   message.value = ''
-
   if (isSignup.value) {
     const ok = await auth.signup(email.value.trim(), pw.value)
     if (ok) {
@@ -69,14 +97,48 @@ async function submit() {
     else { message.value = auth.error; isError.value = true }
   }
 }
+
+async function sendReset() {
+  if (!email.value) {
+    message.value = '이메일을 입력해주세요.'; isError.value = true; return
+  }
+  sending.value = true
+  message.value = ''
+  const { error } = await supabase.auth.resetPasswordForEmail(email.value.trim(), {
+    redirectTo: `${window.location.origin}/reset-password`
+  })
+  sending.value = false
+  if (error) {
+    message.value = '발송 실패. 이메일을 확인해주세요.'; isError.value = true
+  } else {
+    message.value = '✅ 재설정 링크를 이메일로 발송했습니다.'
+    isError.value = false
+  }
+}
 </script>
 
 <style scoped>
+.bottom-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .toggle-btn {
   background: none;
   border: none;
   color: var(--primary-bright);
   font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px;
+  text-decoration: underline;
+  width: 100%;
+}
+.forgot-btn {
+  background: none;
+  border: none;
+  color: var(--text-hint);
+  font-size: 12px;
   cursor: pointer;
   text-align: center;
   padding: 4px;
