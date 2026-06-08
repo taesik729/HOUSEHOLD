@@ -53,12 +53,16 @@
       </template>
 
     </div>
+
+    <div class="privacy-link">
+      <RouterLink to="/privacy">개인정보처리방침</RouterLink>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/supabase/client'
 
@@ -133,6 +137,15 @@ async function sendReset() {
   padding: 4px;
   text-decoration: underline;
   width: 100%;
+}
+.privacy-link {
+  text-align: center;
+  margin-top: 16px;
+}
+.privacy-link a {
+  font-size: 12px;
+  color: var(--text-hint);
+  text-decoration: underline;
 }
 .forgot-btn {
   background: none;

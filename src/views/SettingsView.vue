@@ -53,6 +53,9 @@
         <i class="ti ti-logout"></i> 로그아웃
       </button>
       <button class="btn-withdraw" @click="showWithdraw = true">회원 탈퇴</button>
+      <div style="text-align:center;margin-top:4px">
+        <RouterLink to="/privacy" style="font-size:12px;color:var(--text-hint);text-decoration:underline">개인정보처리방침</RouterLink>
+      </div>
     </div>
 
     <!-- 카테고리 추가/수정 모달 -->
@@ -133,7 +136,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCategories } from '@/composables/useCategories.js'

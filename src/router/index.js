@@ -8,6 +8,7 @@ const routes = [
   { path: '/stats',     name: 'Stats',     component: () => import('@/views/StatsView.vue') },
   { path: '/settings',        name: 'Settings',       component: () => import('@/views/SettingsView.vue') },
   { path: '/reset-password',  name: 'ResetPassword',  component: () => import('@/views/ResetPasswordView.vue'), meta: { public: true } },
+  { path: '/privacy',         name: 'Privacy',        component: () => import('@/views/PrivacyView.vue'),       meta: { public: true } },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
