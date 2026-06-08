@@ -31,10 +31,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function init() {
-    const { data } = await supabase.auth.getSession()
-    user.value = data.session?.user ?? null
-    supabase.auth.onAuthStateChange((_e, session) => {
-      user.value = session?.user ?? null
+    return new Promise((resolve) => {
+      supabase.auth.getSession().then(({ data }) => {
+        user.value = data.session?.user ?? null
+        resolve()
+      })
+      supabase.auth.onAuthStateChange((_e, session) => {
+        user.value = session?.user ?? null
+      })
     })
   }
 

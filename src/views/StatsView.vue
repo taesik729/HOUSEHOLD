@@ -85,6 +85,7 @@ async function load() {
   const lastDay = new Date(year.value, month.value, 0).getDate()
   const to   = `${year.value}-${String(month.value).padStart(2,'0')}-${lastDay}`
   const { data } = await supabase.from('household_ledger').select('*')
+    .eq('user_id', auth.user?.id)
     .gte('date', from).lte('date', to)
   rows.value = data ?? []
   loading.value = false

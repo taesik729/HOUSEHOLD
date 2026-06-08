@@ -101,6 +101,7 @@ async function load() {
   const { data } = await supabase
     .from('household_ledger')
     .select('*')
+    .eq('user_id', auth.user?.id)
     .gte('date', from).lte('date', to)
     .order('date', { ascending: false })
   rows.value = data ?? []
