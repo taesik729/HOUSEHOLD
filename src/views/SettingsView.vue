@@ -69,8 +69,12 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">아이콘 (이모지)</label>
-          <input v-model="catForm.icon" class="form-input" placeholder="예: 💪" maxlength="2" />
+          <label class="form-label">아이콘</label>
+          <div class="emoji-grid">
+            <div v-for="e in EMOJIS" :key="e"
+              :class="['emoji-dot', catForm.icon===e?'selected':'']"
+              @click="catForm.icon=e">{{ e }}</div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -146,6 +150,17 @@ const editCat      = ref(null)
 const catForm      = ref({ name: '', icon: '💳', color: '#FF6B6B' })
 const catError     = ref('')
 const saving       = ref(false)
+
+const EMOJIS = [
+  '🍚','🍔','🍽️','🍺','🎂','🍞','☕','🍜',
+  '🚗','🚌','✈️','⛽','🚕','🚲','🛵','🚢',
+  '💊','🏥','💉','🩺','🧴','🏃','💪','🧘',
+  '📚','🎓','✏️','🖥️','📱','🎮','🎵','🎨',
+  '🏠','🛒','💡','🔧','🧹','🛁','🛋️','🪴',
+  '💰','💳','🏦','📈','💵','🎁','💸','🪙',
+  '👗','👟','💄','💍','👜','🕶️','🧴','🪒',
+  '🐶','🐱','⚽','🏊','🎭','📷','🌿','🌾',
+]
 
 const COLORS = [
   '#FF6B6B','#FF8E53','#FDCB6E','#00B894','#00CEC9',
@@ -234,6 +249,13 @@ onMounted(fetchCategories)
                  font-size: 14px; cursor: pointer; display: flex; align-items: center;
                  justify-content: center; gap: 6px; }
 .cat-add-btn:hover { background: var(--primary-light); }
+
+.emoji-grid    { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.emoji-dot     { width: 38px; height: 38px; border-radius: 8px; cursor: pointer; font-size: 20px;
+                 display: flex; align-items: center; justify-content: center;
+                 border: 2px solid transparent; transition: background .1s; }
+.emoji-dot:hover    { background: var(--bg-sub); }
+.emoji-dot.selected { border-color: var(--primary-mid); background: var(--primary-light); }
 
 .color-grid    { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
 .color-dot     { width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
