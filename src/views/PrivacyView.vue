@@ -38,6 +38,8 @@
           <li><strong>Supabase</strong> — 데이터베이스 및 인증 서비스 (미국 소재)</li>
         </ul>
         <p>Supabase 개인정보처리방침: <a href="https://supabase.com/privacy" target="_blank">supabase.com/privacy</a></p>
+        <li><strong>Google AdMob</strong> — 광고 서비스 (미국 소재). 광고 제공을 위해 기기 식별자 및 광고 ID를 수집할 수 있습니다.</li>
+        <p>Google 개인정보처리방침: <a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a></p>
       </section>
 
       <section>
