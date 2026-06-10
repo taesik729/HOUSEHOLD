@@ -1,5 +1,7 @@
 <template>
   <div class="login-wrap">
+    <div v-if="!ready" class="loading">비밀번호 재설정 준비 중...</div>
+    <template v-else>
     <div class="login-logo">
       <div class="login-logo-icon">🔐</div>
       <h1>비밀번호 재설정</h1>
@@ -20,6 +22,7 @@
         {{ loading ? '처리 중...' : '비밀번호 변경' }}
       </button>
     </div>
+    </template>
   </div>
 </template>
 
@@ -30,13 +33,18 @@ import { supabase } from '@/supabase/client'
 
 const router  = useRouter()
 
-onMounted(async () => {
-  // URL 해시에서 Supabase 세션 처리
-  const { data } = await supabase.auth.getSession()
-  if (!data.session) {
-    // 세션 없으면 로그인 페이지로
-    router.replace('/login')
-  }
+const ready = ref(false)
+
+onMounted(() => {
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      ready.value = true
+    }
+  })
+  // 이미 세션 있는 경우 (페이지 새로고침 등)
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) ready.value = true
+  })
 })
 const pw      = ref('')
 const pw2     = ref('')
