@@ -24,11 +24,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/supabase/client'
 
 const router  = useRouter()
+
+onMounted(async () => {
+  // URL 해시에서 Supabase 세션 처리
+  const { data } = await supabase.auth.getSession()
+  if (!data.session) {
+    // 세션 없으면 로그인 페이지로
+    router.replace('/login')
+  }
+})
 const pw      = ref('')
 const pw2     = ref('')
 const loading = ref(false)
