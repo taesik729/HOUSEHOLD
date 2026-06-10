@@ -33,15 +33,15 @@
       <!-- 카테고리 -->
       <div class="form-group">
         <label class="form-label">카테고리</label>
-        <select v-model="form.category" class="form-input">
-          <option value="">선택</option>
-          <template v-if="form.type==='income'">
-            <option v-for="c in incomeCats" :key="c.id" :value="c.name">{{ c.icon }} {{ c.name }}</option>
-          </template>
-          <template v-else>
-            <option v-for="c in expenseCats" :key="c.id" :value="c.name">{{ c.icon }} {{ c.name }}</option>
-          </template>
-        </select>
+        <div class="cat-grid">
+          <button v-for="c in (form.type==='income' ? incomeCats : expenseCats)"
+            :key="c.id" type="button"
+            :class="['cat-btn', form.category===c.name ? 'active' : '']"
+            @click="form.category = c.name">
+            <span class="cat-icon">{{ c.icon }}</span>
+            <span class="cat-label">{{ c.name }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- 메모 -->

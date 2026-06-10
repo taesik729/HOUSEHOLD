@@ -11,12 +11,13 @@ import { Capacitor } from '@capacitor/core'
 const ADMOB_CONFIG = {
   appId:    'ca-app-pub-4592571865246292~3538251911',
   bannerId: 'ca-app-pub-4592571865246292/8487662975',
-  showAds:  true,   // ← 여기서 광고 ON/OFF 제어 (true로 바꾸면 광고 노출)
+  showAds:  false,  // ← 여기서 광고 ON/OFF 제어 (true로 바꾸면 광고 노출)
 }
 
 onMounted(async () => {
   // 네이티브 앱(Android/iOS)에서만 AdMob 초기화
   if (!Capacitor.isNativePlatform()) return
+
   if (!ADMOB_CONFIG.showAds) return
 
   try {

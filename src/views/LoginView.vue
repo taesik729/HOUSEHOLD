@@ -109,7 +109,7 @@ async function sendReset() {
   sending.value = true
   message.value = ''
   const { error } = await supabase.auth.resetPasswordForEmail(email.value.trim(), {
-    redirectTo: `${window.location.origin}/reset-password`
+    redirectTo: 'https://household-taesik.vercel.app/reset-password'
   })
   sending.value = false
   if (error) {

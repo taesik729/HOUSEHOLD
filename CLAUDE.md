@@ -91,6 +91,67 @@
 
 ---
 
+## Android APK Safe Area 처리 (필수!)
+
+Capacitor 5는 기본적으로 edge-to-edge 모드로 실행됨.
+WebView가 상단 Status Bar / 하단 Navigation Bar 영역까지 침범해서 UI가 겹치는 문제 발생.
+
+### 해결 방법 (HOUSEHOLD에서 검증 완료)
+
+**1. `index.html`** — viewport-fit=cover 추가
+```html
+<meta name="viewport" content="..., viewport-fit=cover" />
+```
+
+**2. `src/assets/main.css`** — safe-area CSS 적용
+```css
+/* 상단 */
+.topbar {
+  padding: env(safe-area-inset-top, 0px) 20px 0;
+  height: calc(56px + env(safe-area-inset-top, 0px));
+  align-items: flex-end;
+  padding-bottom: 8px;
+}
+/* 하단 탭바 */
+.bottom-nav {
+  bottom: env(safe-area-inset-bottom);
+  height: 64px;
+}
+/* 콘텐츠 영역 */
+.content { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+/* FAB 버튼 */
+.btn-fab { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+```
+
+**3. `android/app/src/main/java/.../MainActivity.java`**
+```java
+import android.os.Bundle;
+import androidx.core.view.WindowCompat;
+public class MainActivity extends BridgeActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+    }
+}
+```
+
+**4. `capacitor.config.json`** — StatusBar 설정
+```json
+"plugins": {
+  "StatusBar": {
+    "overlaysWebView": false,
+    "style": "DEFAULT",
+    "backgroundColor": "#ffffff"
+  }
+}
+```
+
+> safe-area-inset-bottom 값 확인: 앱에서 JS로 CSS 변수에 담아 화면에 표시  
+> 삼성 갤럭시 3버튼 네비 기준 **48px** 반환 확인됨
+
+---
+
 ## 코드 수정 규칙
 
 - 코드 수정 시 반드시 **변경 전/후 코드를 대화창에 펼쳐서** 보여줌 (코드블록 형식)
