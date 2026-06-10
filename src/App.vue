@@ -3,9 +3,17 @@
 </template>
 
 <script setup>
-import { RouterView } from 'vue-router'
+import { RouterView, useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { Capacitor } from '@capacitor/core'
+import { supabase } from '@/supabase/client'
+
+const router = useRouter()
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    router.push('/reset-password')
+  }
+})
 
 // AdMob 설정 (서버값으로 ON/OFF 제어 가능하도록 분리)
 const ADMOB_CONFIG = {
