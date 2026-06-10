@@ -53,6 +53,7 @@ async function submit() {
   } else {
     message.value = '✅ 비밀번호가 변경됐습니다.'
     isError.value = false
+    await supabase.auth.signOut()
     setTimeout(() => router.replace('/login'), 1500)
   }
 }
