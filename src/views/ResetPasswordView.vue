@@ -63,10 +63,9 @@ async function submit() {
   if (error) {
     message.value = '세션이 만료됐습니다. 이메일 링크를 다시 클릭해주세요.'; isError.value = true
   } else {
-    message.value = '✅ 비밀번호가 변경됐습니다.'
-    isError.value = false
     try { await supabase.auth.signOut() } catch (e) {}
-    setTimeout(() => { window.location.href = '/login' }, 1500)
+    message.value = '✅ 변경 완료! 이 창을 닫고 앱으로 돌아가세요.'
+    isError.value = false
   }
 }
 </script>
