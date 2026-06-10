@@ -1,8 +1,12 @@
 {
   "appId": "com.taesik.household",
-  "appName": "우리집 가계부",
+  "appName": "심플 가계부",
   "webDir": "dist",
   "server": {
     "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#ffffff",
+    "allowMixedContent": true
   }
 }
