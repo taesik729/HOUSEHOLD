@@ -16,11 +16,20 @@
         <p class="login-logo-sub">새 비밀번호를 입력해주세요</p>
         <div class="form-group">
           <label class="form-label">새 비밀번호</label>
-          <input v-model="pw" class="form-input" type="password" autocomplete="new-password" placeholder="새 비밀번호 입력 (6자 이상)" />
+          <div class="pw-wrap">
+            <input v-model="pw" class="form-input" :type="show1 ? 'text' : 'password'" autocomplete="new-password" placeholder="새 비밀번호 입력 (6자 이상)" />
+            <button type="button" class="eye-btn" @click="show1 = !show1">{{ show1 ? '🙈' : '👁️' }}</button>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">비밀번호 확인</label>
-          <input v-model="pw2" class="form-input" type="password" autocomplete="new-password" placeholder="비밀번호 재입력" @keyup.enter="submit" />
+          <div class="pw-wrap">
+            <input v-model="pw2" class="form-input" :type="show2 ? 'text' : 'password'" autocomplete="new-password" placeholder="비밀번호 재입력" @keyup.enter="submit" />
+            <button type="button" class="eye-btn" @click="show2 = !show2">{{ show2 ? '🙈' : '👁️' }}</button>
+          </div>
+          <p v-if="pw2" :class="['match-msg', pw === pw2 ? 'ok' : 'ng']">
+            {{ pw === pw2 ? '✅ 비밀번호가 일치합니다' : '❌ 비밀번호가 일치하지 않습니다' }}
+          </p>
         </div>
         <p v-if="message" :class="['login-msg', isError ? 'error' : 'success']">{{ message }}</p>
         <button class="btn-primary" @click="submit" :disabled="loading">
@@ -50,6 +59,8 @@ const loading = ref(false)
 const message = ref('')
 const isError = ref(false)
 const status  = ref('waiting') // waiting | ready | expired
+const show1   = ref(false)
+const show2   = ref(false)
 
 let unsubscribe = null
 
@@ -114,4 +125,11 @@ async function submit() {
 .login-msg.error   { background: var(--expense-light); color: var(--expense); }
 .login-msg.success { background: var(--income-light);  color: var(--income); }
 .login-msg.info    { background: var(--bg-sub); color: var(--text-sub); }
+.pw-wrap  { position: relative; }
+.pw-wrap .form-input { padding-right: 44px; }
+.eye-btn  { position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; font-size: 18px; padding: 0; }
+.match-msg { font-size: 12px; margin-top: 4px; }
+.match-msg.ok { color: var(--income); }
+.match-msg.ng { color: var(--expense); }
 </style>
