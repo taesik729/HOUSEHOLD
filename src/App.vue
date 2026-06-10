@@ -20,13 +20,18 @@ onMounted(async () => {
   // 딥링크 URL 처리 (비밀번호 재설정 등)
   if (Capacitor.isNativePlatform()) {
     const { App: CapApp } = await import('@capacitor/app')
-    CapApp.addListener('appUrlOpen', (data) => {
+    CapApp.addListener('appUrlOpen', async (data) => {
       try {
-        const url = new URL(data.url)
-        const search = url.search
-        const hash   = url.hash
-        router.push('/reset-password' + search + hash)
-      } catch (e) {}
+        const url  = new URL(data.url)
+        const code = url.searchParams.get('code')
+        const { supabase } = await import('@/supabase/client')
+        if (code) {
+          await supabase.auth.exchangeCodeForSession(code)
+        }
+        router.push('/reset-password')
+      } catch (e) {
+        router.push('/reset-password')
+      }
     })
   }
 
