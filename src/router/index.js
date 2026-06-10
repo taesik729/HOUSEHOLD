@@ -21,8 +21,11 @@ router.beforeEach(async (to) => {
   // URL에 recovery 토큰이 있으면 reset-password로 이동
   const hash  = window.location.hash
   const query = to.query
-  const isRecovery = hash.includes('type=recovery') || query.type === 'recovery' || hash.includes('access_token')
-  if (isRecovery) return '/reset-password'
+  const isRecovery = hash.includes('type=recovery') ||
+                     query.type === 'recovery' ||
+                     hash.includes('access_token') ||
+                     !!query.code  // PKCE 방식: ?code=xxx
+  if (isRecovery && to.path !== '/reset-password') return '/reset-password'
 
   // 비밀번호 재설정 페이지는 항상 허용
   if (to.path === '/reset-password') return true
