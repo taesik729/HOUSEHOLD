@@ -1,7 +1,5 @@
 <template>
   <div class="login-wrap">
-    <div v-if="!ready" class="loading">비밀번호 재설정 준비 중...</div>
-    <template v-else>
     <div class="login-logo">
       <div class="login-logo-icon">🔐</div>
       <h1>비밀번호 재설정</h1>
@@ -10,11 +8,11 @@
     <div class="login-card">
       <div class="form-group">
         <label class="form-label">새 비밀번호</label>
-        <input v-model="pw" class="form-input" type="password" placeholder="새 비밀번호 입력" />
+        <input v-model="pw" class="form-input" type="password" autocomplete="new-password" placeholder="새 비밀번호 입력" />
       </div>
       <div class="form-group">
         <label class="form-label">비밀번호 확인</label>
-        <input v-model="pw2" class="form-input" type="password" placeholder="비밀번호 재입력"
+        <input v-model="pw2" class="form-input" type="password" autocomplete="new-password" placeholder="비밀번호 재입력"
           @keyup.enter="submit" />
       </div>
       <p v-if="message" :class="['login-msg', isError ? 'error' : 'success']">{{ message }}</p>
@@ -22,30 +20,15 @@
         {{ loading ? '처리 중...' : '비밀번호 변경' }}
       </button>
     </div>
-    </template>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/supabase/client'
 
 const router  = useRouter()
-
-const ready = ref(false)
-
-onMounted(() => {
-  supabase.auth.onAuthStateChange((event) => {
-    if (event === 'PASSWORD_RECOVERY') {
-      ready.value = true
-    }
-  })
-  // 이미 세션 있는 경우 (페이지 새로고침 등)
-  supabase.auth.getSession().then(({ data }) => {
-    if (data.session) ready.value = true
-  })
-})
 const pw      = ref('')
 const pw2     = ref('')
 const loading = ref(false)
@@ -70,7 +53,7 @@ async function submit() {
   } else {
     message.value = '✅ 비밀번호가 변경됐습니다.'
     isError.value = false
-    setTimeout(() => router.replace('/'), 1500)
+    setTimeout(() => router.replace('/login'), 1500)
   }
 }
 </script>
