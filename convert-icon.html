@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><style>*{margin:0;padding:0;}</style></head>
+<body>
+<canvas id='c' width='512' height='512'></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const img = new Image();
+img.onload = function() {
+  ctx.drawImage(img, 0, 0, 512, 512);
+  const link = document.createElement('a');
+  link.download = 'icon-512.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+};
+img.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMDAiIGZpbGw9IiMxRTNBNUYiLz4KICA8dGV4dCB4PSIyNTYiIHk9IjI5MCIgZm9udC1zaXplPSIyNjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfj6A8L3RleHQ+CiAgPHRleHQgeD0iMjU2IiB5PSI0NDAiIGZvbnQtc2l6ZT0iNTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiPuqwgOqzhOu2gDwvdGV4dD4KPC9zdmc+Cg==';
+</script>
+</body>
+</html>

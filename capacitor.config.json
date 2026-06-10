@@ -1,0 +1,8 @@
+{
+  "appId": "com.taesik.household",
+  "appName": "우리집 가계부",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="c" width="512" height="512"></canvas>
+<br>
+<button onclick="download()">PNG 다운로드</button>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// 배경
+ctx.fillStyle = '#1E3A5F';
+ctx.beginPath();
+ctx.roundRect(0, 0, 512, 512, 100);
+ctx.fill();
+
+// 집 이모지
+ctx.font = '260px serif';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText('🏠', 256, 270);
+
+// 가계부 텍스트
+ctx.fillStyle = 'white';
+ctx.font = 'bold 56px sans-serif';
+ctx.textBaseline = 'alphabetic';
+ctx.fillText('가계부', 256, 460);
+
+function download() {
+  const a = document.createElement('a');
+  a.download = 'icon-512.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+</script>
+</body>
+</html>

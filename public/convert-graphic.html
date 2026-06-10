@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="c" width="1024" height="500"></canvas>
+<br>
+<button onclick="download()">그래픽 이미지 다운로드 (1024x500)</button>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// 배경 그라디언트
+const grad = ctx.createLinearGradient(0, 0, 1024, 500);
+grad.addColorStop(0, '#1E3A5F');
+grad.addColorStop(1, '#2d5a9e');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, 1024, 500);
+
+// 집 이모지
+ctx.font = '200px serif';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText('🏠', 300, 220);
+
+// 앱 이름
+ctx.fillStyle = 'white';
+ctx.font = 'bold 80px sans-serif';
+ctx.textAlign = 'left';
+ctx.textBaseline = 'middle';
+ctx.fillText('우리집 가계부', 480, 200);
+
+// 슬로건
+ctx.fillStyle = 'rgba(255,255,255,0.8)';
+ctx.font = '36px sans-serif';
+ctx.fillText('수입·지출을 한눈에 관리하세요', 480, 300);
+
+function download() {
+  const a = document.createElement('a');
+  a.download = 'feature-graphic.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+</script>
+</body>
+</html>
