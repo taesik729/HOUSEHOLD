@@ -219,8 +219,8 @@ async function withdraw() {
   withdrawing.value = true
   await supabase.from('household_ledger').delete().eq('user_id', auth.user.id)
   await supabase.from('household_categories').delete().eq('user_id', auth.user.id)
-  const { error } = await supabase.rpc('delete_user')
-  if (error) { await auth.logout() }
+  await supabase.rpc('delete_user')
+  await auth.logout()
   router.push('/login')
 }
 
