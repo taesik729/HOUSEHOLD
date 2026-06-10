@@ -1,10 +1,10 @@
-# 우리집 가계부 — CLAUDE.md
+# 심플 가계부 — CLAUDE.md
 
 ---
 
 ## 프로젝트 개요
 
-- **이름**: 우리집 가계부
+- **이름**: 심플 가계부
 - **패키지**: `com.taesik.household`
 - **배포**: Vercel (`https://household-taesik.vercel.app`)
 - **GitHub**: https://github.com/taesik729/HOUSEHOLD
@@ -149,6 +149,43 @@ public class MainActivity extends BridgeActivity {
 
 > safe-area-inset-bottom 값 확인: 앱에서 JS로 CSS 변수에 담아 화면에 표시  
 > 삼성 갤럭시 3버튼 네비 기준 **48px** 반환 확인됨
+
+---
+
+## 비밀번호 재설정 흐름
+
+- `src/views/LoginView.vue` → `resetPasswordForEmail` 에 `redirectTo: 'https://household-taesik.vercel.app/reset-password'` 하드코딩
+- Supabase 대시보드 → Authentication → URL Configuration:
+  - **Site URL**: `https://household-taesik.vercel.app`
+  - **Redirect URLs**: `https://household-taesik.vercel.app/reset-password` 등록 필수
+- `src/supabase/client.js` → `detectSessionInUrl: true` 설정
+- `src/router/index.js` → `/reset-password` 경로는 가드 최상단에서 `return true` 처리
+- `src/views/ResetPasswordView.vue` → 변경 완료 후 `signOut()` → "앱으로 돌아가세요" 메시지 표시 (웹 로그인 화면으로 이동 안 함)
+- **이메일 링크 클릭 흐름**: 네이버/지메일 → 웹 브라우저에서 비밀번호 변경 → 브라우저 닫고 앱에서 로그인
+
+---
+
+## 회원 탈퇴
+
+- `src/views/SettingsView.vue` → `withdraw()` 함수
+- 순서: 데이터 삭제(`household_ledger`, `household_categories`) → `supabase.rpc('delete_user')` → `supabase.auth.signOut()` → `localStorage.removeItem('household-auth')` → `window.location.href = '/login'`
+- `router.push` 대신 `window.location.href` 사용 (APK에서 router.push 미작동 이슈)
+
+---
+
+## 삼성 카테고리 피커 문제
+
+- 삼성 기기에서 `<select>` 태그 → 전체화면 네이티브 피커로 표시됨
+- **해결**: `<select>` 제거 후 커스텀 버튼 그리드(`cat-grid`, `cat-btn`)로 교체
+- `src/components/LedgerModal.vue` 에 적용됨
+
+---
+
+## Supabase 인증 문제 디버깅 순서
+
+1. Supabase 대시보드 설정 (Site URL, Redirect URLs) 확인
+2. 환경변수 확인
+3. 코드 확인
 
 ---
 
