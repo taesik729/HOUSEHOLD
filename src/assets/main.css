@@ -235,6 +235,14 @@ body {
 .prog-bar  { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
 .prog-fill { height: 100%; border-radius: 4px; transition: width .4s; }
 
+/* ── 날짜 분할 입력 ── */
+.date-split    { display: flex; align-items: center; gap: 6px; }
+.date-split .form-input { text-align: center; padding: 13px 6px; }
+.date-split .form-input:nth-child(1) { flex: 2; }
+.date-split .form-input:nth-child(3),
+.date-split .form-input:nth-child(5) { flex: 1; }
+.date-sep      { color: var(--text-hint); font-weight: 500; flex-shrink: 0; }
+
 /* ── pill ── */
 .pill          { font-size: 11px; padding: 2px 8px; border-radius: 99px; display: inline-block; }
 .pill-income   { background: var(--income-light); color: var(--income); }

@@ -22,7 +22,13 @@
       <div class="form-grid2">
         <div class="form-group">
           <label class="form-label">날짜</label>
-          <input v-model="form.date" type="date" class="form-input" />
+          <div class="date-split">
+            <input v-model="dateY" type="number" class="form-input" placeholder="년" @input="syncDate" />
+            <span class="date-sep">-</span>
+            <input v-model="dateM" type="number" class="form-input" placeholder="월" @input="syncDate" />
+            <span class="date-sep">-</span>
+            <input v-model="dateD" type="number" class="form-input" placeholder="일" @input="syncDate" />
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">금액 (원)</label>
@@ -82,8 +88,24 @@ const form = ref({ id: null, type: 'expense', date: today, amount: '', category:
 const saving = ref(false)
 const errMsg = ref('')
 
+const dateY = ref(today.slice(0, 4))
+const dateM = ref(today.slice(5, 7))
+const dateD = ref(today.slice(8, 10))
+
+function syncDate() {
+  const y = String(dateY.value).padStart(4, '0')
+  const m = String(dateM.value).padStart(2, '0')
+  const d = String(dateD.value).padStart(2, '0')
+  form.value.date = `${y}-${m}-${d}`
+}
+
 watch(() => props.editRow, (r) => {
-  if (r) form.value = { ...r }
+  if (r) {
+    form.value = { ...r }
+    dateY.value = r.date?.slice(0, 4) ?? today.slice(0, 4)
+    dateM.value = r.date?.slice(5, 7) ?? today.slice(5, 7)
+    dateD.value = r.date?.slice(8, 10) ?? today.slice(8, 10)
+  }
 }, { immediate: true })
 
 async function save() {
