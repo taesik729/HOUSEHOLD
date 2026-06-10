@@ -220,9 +220,9 @@ async function withdraw() {
   await supabase.from('household_ledger').delete().eq('user_id', auth.user.id)
   await supabase.from('household_categories').delete().eq('user_id', auth.user.id)
   await supabase.rpc('delete_user')
-  try { await auth.logout() } catch (e) {}
-  auth.user = null
-  router.push('/login')
+  try { await supabase.auth.signOut() } catch (e) {}
+  localStorage.removeItem('household-auth')
+  window.location.href = '/login'
 }
 
 onMounted(fetchCategories)
