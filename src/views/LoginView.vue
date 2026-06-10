@@ -2,7 +2,7 @@
   <div class="login-wrap">
     <div class="login-logo">
       <div class="login-logo-icon">🏠</div>
-      <h1>간편 가계부</h1>
+      <h1>심플 가계부</h1>
       <p>가정 수입·지출 관리</p>
     </div>
     <div class="login-card">
