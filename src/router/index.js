@@ -18,12 +18,13 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  // 비밀번호 재설정 페이지는 항상 허용
+  if (to.path === '/reset-password') return true
+
   const auth = useAuthStore()
   if (!auth.user) await auth.init()
   if (!to.meta.public && !auth.user) return '/login'
   if (to.path === '/login' && auth.user) return '/'
-  // 비밀번호 재설정 링크 클릭 시 recovery 타입이면 reset-password로 유지
-  if (to.path === '/reset-password') return true
 })
 
 export default router
