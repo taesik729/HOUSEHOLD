@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.taesik.household",
+      "sha256_cert_fingerprints": [
+        "66:05:C9:00:84:3F:68:B4:BB:3C:19:31:FD:FE:2C:90:9F:5C:48:43:F7:6F:3F:FA:EA:62:BB:A1:9C:ED:7F:74"
+      ]
+    }
+  }
+]
