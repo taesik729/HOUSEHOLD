@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { RouterView, useRouter } from 'vue-router'
+import { RouterView } from 'vue-router'
 import { onMounted } from 'vue'
 import { Capacitor } from '@capacitor/core'
 
@@ -14,27 +14,7 @@ const ADMOB_CONFIG = {
   showAds:  false,  // ← 여기서 광고 ON/OFF 제어 (true로 바꾸면 광고 노출)
 }
 
-const router = useRouter()
-
 onMounted(async () => {
-  // 딥링크 URL 처리 (비밀번호 재설정 등)
-  if (Capacitor.isNativePlatform()) {
-    const { App: CapApp } = await import('@capacitor/app')
-    CapApp.addListener('appUrlOpen', async (data) => {
-      try {
-        const url  = new URL(data.url)
-        const code = url.searchParams.get('code')
-        const { supabase } = await import('@/supabase/client')
-        if (code) {
-          await supabase.auth.exchangeCodeForSession(code)
-        }
-        router.push('/reset-password')
-      } catch (e) {
-        router.push('/reset-password')
-      }
-    })
-  }
-
   // 네이티브 앱(Android/iOS)에서만 AdMob 초기화
   if (!Capacitor.isNativePlatform()) return
 
