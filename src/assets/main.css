@@ -199,12 +199,13 @@ body {
                  margin-top: 4px; }
 
 /* ── 카테고리 그리드 ── */
-.cat-grid      { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.cat-btn       { display: flex; flex-direction: column; align-items: center; gap: 4px;
-                 padding: 10px 4px; border-radius: var(--radius); border: 1.5px solid var(--border-md);
+.cat-grid      { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+                 max-height: 180px; overflow-y: auto; }
+.cat-btn       { display: flex; flex-direction: column; align-items: center; gap: 3px;
+                 padding: 7px 4px; border-radius: var(--radius); border: 1.5px solid var(--border-md);
                  background: none; cursor: pointer; transition: all .15s; }
 .cat-btn.active { background: var(--primary-light); border-color: var(--primary-bright); }
-.cat-icon      { font-size: 22px; }
+.cat-icon      { font-size: 18px; }
 .cat-label     { font-size: 11px; color: var(--text-sub); text-align: center; line-height: 1.2; }
 
 /* ── 로그인 ── */
