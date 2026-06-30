@@ -6,6 +6,18 @@
         <button class="icon-btn" @click="$emit('close')"><i class="ti ti-x"></i></button>
       </div>
 
+      <!-- 수입/지출 토글 -->
+      <div class="type-toggle">
+        <button :class="['type-btn income', form.type==='income'?'active':'']"
+          @click="form.type='income'">
+          <i class="ti ti-trending-up"></i> 수입
+        </button>
+        <button :class="['type-btn expense', form.type==='expense'?'active':'']"
+          @click="form.type='expense'">
+          <i class="ti ti-trending-down"></i> 지출
+        </button>
+      </div>
+
       <!-- 날짜 / 금액 -->
       <div class="form-grid2">
         <div class="form-group">
@@ -45,18 +57,6 @@
       </div>
 
       <p v-if="errMsg" style="font-size:13px;color:var(--expense)">{{ errMsg }}</p>
-
-      <!-- 수입/지출 토글 -->
-      <div class="type-toggle">
-        <button :class="['type-btn income', form.type==='income'?'active':'']"
-          @click="form.type='income'">
-          <i class="ti ti-trending-up"></i> 수입
-        </button>
-        <button :class="['type-btn expense', form.type==='expense'?'active':'']"
-          @click="form.type='expense'">
-          <i class="ti ti-trending-down"></i> 지출
-        </button>
-      </div>
 
       <div class="modal-ft">
         <button class="btn-primary" @click="save" :disabled="saving">
