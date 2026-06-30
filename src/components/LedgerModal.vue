@@ -18,22 +18,22 @@
         </button>
       </div>
 
-      <!-- 날짜 / 금액 -->
-      <div class="form-grid2">
-        <div class="form-group">
-          <label class="form-label">날짜</label>
-          <div class="date-split">
-            <input v-model="dateY" type="number" class="form-input" placeholder="년" @input="syncDate" />
-            <span class="date-sep">-</span>
-            <input v-model="dateM" type="number" class="form-input" placeholder="월" @input="syncDate" />
-            <span class="date-sep">-</span>
-            <input v-model="dateD" type="number" class="form-input" placeholder="일" @input="syncDate" />
-          </div>
+      <!-- 날짜 -->
+      <div class="form-group">
+        <label class="form-label">날짜</label>
+        <div class="date-split">
+          <input v-model="dateY" type="number" class="form-input" placeholder="년" @input="syncDate" />
+          <span class="date-sep">-</span>
+          <input v-model="dateM" type="number" class="form-input" placeholder="월" @input="syncDate" />
+          <span class="date-sep">-</span>
+          <input v-model="dateD" type="number" class="form-input" placeholder="일" @input="syncDate" />
         </div>
-        <div class="form-group">
-          <label class="form-label">금액 (원)</label>
-          <input v-model="form.amount" type="number" class="form-input" placeholder="0" />
-        </div>
+      </div>
+
+      <!-- 금액 -->
+      <div class="form-group">
+        <label class="form-label">금액 (원)</label>
+        <input v-model="form.amount" type="number" class="form-input" placeholder="0" />
       </div>
 
       <!-- 카테고리 -->
