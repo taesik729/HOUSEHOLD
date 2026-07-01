@@ -41,7 +41,7 @@
 
 ### 버전 코드
 - `android/app/build.gradle` 의 `versionCode` 업로드마다 +1 증가 필요
-- 현재: `versionCode 3`
+- 현재: `versionCode 7`
 
 ### 키스토어
 - 경로: `C:\work\FARM\HOUSEHOLD\household-key.jks`
@@ -189,9 +189,20 @@ public class MainActivity extends BridgeActivity {
 
 ---
 
+## 프로젝트 구분 (중요!)
+
+- **심플 가계부** (`com.taesik.household`) — Android APK, Capacitor 앱
+- **골프 스코어** (`C:\work\SCORE`) — Android APK, Capacitor 앱
+- **AI 병해충 진단** — Android APK, Capacitor 앱
+- **태식 팜 MES** — 웹앱 (PWA), APK 아님
+- 앱 관련 작업(빌드, 배포, AdMob, Play Console)은 심플 가계부·골프 스코어·병해충 진단에만 해당
+
+---
+
 ## 코드 수정 규칙
 
-- 코드 수정 시 반드시 **변경 전/후 코드를 대화창에 펼쳐서** 보여줌 (코드블록 형식)
+- 코드 수정 시 반드시 **수정 전 → 수정 후** 코드블록 형식으로 대화창에 펼쳐서 보여줌
 - 터미널 명령어 실행 전 코드블록으로 명령어 먼저 표시
 - "실행합니다" 하고 그냥 넘어가지 않음
 - 모든 세션에 적용
+- **구현 전 설계 먼저**: 새 기능 구현 전 반드시 폴더 구조·상태 흐름을 먼저 설계하고 사용자 확인 후 구현
