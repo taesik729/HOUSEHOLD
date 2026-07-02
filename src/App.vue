@@ -11,7 +11,7 @@ import { Capacitor } from '@capacitor/core'
 const ADMOB_CONFIG = {
   appId:    'ca-app-pub-4592571865246292~3538251911',
   bannerId: 'ca-app-pub-4592571865246292/8487662975',
-  showAds:  false,  // ← 여기서 광고 ON/OFF 제어 (true로 바꾸면 광고 노출)
+  showAds:  true,   // ← 여기서 광고 ON/OFF 제어 (true로 바꾸면 광고 노출)
 }
 
 onMounted(async () => {
@@ -29,9 +29,9 @@ onMounted(async () => {
     })
     await AdMob.showBanner({
       adId:     ADMOB_CONFIG.bannerId,
-      adSize:   BannerAdSize.BANNER,
+      adSize:   BannerAdSize.ADAPTIVE_BANNER,
       position: BannerAdPosition.BOTTOM_CENTER,
-      margin:   0,
+      margin:   60,
     })
   } catch (e) {
     console.warn('AdMob error:', e)
