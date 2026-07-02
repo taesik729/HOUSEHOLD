@@ -14,6 +14,9 @@
       "overlaysWebView": false,
       "style": "DEFAULT",
       "backgroundColor": "#ffffff"
+    },
+    "AdMob": {
+      "appId": "ca-app-pub-4592571865246292~3538251911"
     }
   }
 }
