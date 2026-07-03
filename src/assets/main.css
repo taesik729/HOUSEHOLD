@@ -54,7 +54,7 @@ body {
 
 /* ── 하단 탭바 ── */
 .bottom-nav    { position: fixed; left: 0; right: 0;
-                 bottom: env(safe-area-inset-bottom);
+                 bottom: calc(var(--ad-banner-height, 0px) + env(safe-area-inset-bottom, 0px));
                  height: 64px;
                  background: var(--bg-card); border-top: 1px solid var(--border);
                  display: flex; align-items: stretch; z-index: 50;
@@ -148,7 +148,7 @@ body {
 .btn-secondary { padding: 12px 16px; border-radius: var(--radius); background: none;
                  border: 1.5px solid var(--border-md); font-size: 14px;
                  cursor: pointer; color: var(--text-sub); }
-.btn-fab       { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); right: 20px; width: 54px; height: 54px;
+.btn-fab       { position: fixed; bottom: calc(80px + var(--ad-banner-height, 0px) + env(safe-area-inset-bottom, 0px)); right: 20px; width: 54px; height: 54px;
                  border-radius: 50%; background: var(--primary-mid); color: #fff;
                  border: none; font-size: 26px; cursor: pointer;
                  box-shadow: 0 4px 16px rgba(44,82,130,0.35);
@@ -187,7 +187,7 @@ body {
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4);
                  display: flex; align-items: flex-end; justify-content: center;
                  z-index: 200;
-                 padding-bottom: env(safe-area-inset-bottom, 0px); }
+                 padding-bottom: calc(var(--ad-banner-height, 0px) + env(safe-area-inset-bottom, 0px)); }
 .modal         { background: var(--bg-card); border-radius: 24px 24px 0 0;
                  width: 100%; max-width: 640px; padding: 24px 20px 0;
                  max-height: 92dvh; overflow-y: auto;
