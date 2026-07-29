@@ -1,62 +1,66 @@
 <template>
   <div class="modal-overlay" @click.self="$emit('close')">
     <div class="modal">
-      <div class="modal-hd">
-        <div class="modal-title">{{ form.id ? '내역 수정' : '내역 추가' }}</div>
-        <button class="icon-btn" @click="$emit('close')"><i class="ti ti-x"></i></button>
-      </div>
-
-      <!-- 수입/지출 토글 -->
-      <div class="type-toggle">
-        <button :class="['type-btn income', form.type==='income'?'active':'']"
-          @click="form.type='income'">
-          <i class="ti ti-trending-up"></i> 수입
-        </button>
-        <button :class="['type-btn expense', form.type==='expense'?'active':'']"
-          @click="form.type='expense'">
-          <i class="ti ti-trending-down"></i> 지출
-        </button>
-      </div>
-
-      <!-- 날짜 -->
-      <div class="form-group">
-        <label class="form-label">날짜</label>
-        <div class="date-split">
-          <input v-model="dateY" type="number" class="form-input" placeholder="년" @input="syncDate" />
-          <span class="date-sep">-</span>
-          <input v-model="dateM" type="number" class="form-input" placeholder="월" @input="syncDate" />
-          <span class="date-sep">-</span>
-          <input v-model="dateD" type="number" class="form-input" placeholder="일" @input="syncDate" />
+      <!-- 고정 헤더: 제목 + 수입/지출 토글 (스크롤해도 항상 보임) -->
+      <div class="modal-fixed-hd">
+        <div class="modal-hd">
+          <div class="modal-title">{{ form.id ? '내역 수정' : '내역 추가' }}</div>
+          <button class="icon-btn" @click="$emit('close')"><i class="ti ti-x"></i></button>
         </div>
-      </div>
-
-      <!-- 금액 -->
-      <div class="form-group">
-        <label class="form-label">금액 (원)</label>
-        <input v-model="form.amount" type="number" class="form-input" placeholder="0" />
-      </div>
-
-      <!-- 카테고리 -->
-      <div class="form-group">
-        <label class="form-label">카테고리</label>
-        <div class="cat-grid">
-          <button v-for="c in (form.type==='income' ? incomeCats : expenseCats)"
-            :key="c.id" type="button"
-            :class="['cat-btn', form.category===c.name ? 'active' : '']"
-            @click="form.category = c.name">
-            <span class="cat-icon">{{ c.icon }}</span>
-            <span class="cat-label">{{ c.name }}</span>
+        <div class="type-toggle">
+          <button :class="['type-btn income', form.type==='income'?'active':'']"
+            @click="form.type='income'">
+            <i class="ti ti-trending-up"></i> 수입
+          </button>
+          <button :class="['type-btn expense', form.type==='expense'?'active':'']"
+            @click="form.type='expense'">
+            <i class="ti ti-trending-down"></i> 지출
           </button>
         </div>
       </div>
 
-      <!-- 메모 -->
-      <div class="form-group">
-        <label class="form-label">메모 (선택)</label>
-        <input v-model="form.memo" type="text" class="form-input" placeholder="간단한 메모" />
-      </div>
+      <!-- 스크롤 영역: 날짜~메모 -->
+      <div class="modal-body">
+        <!-- 날짜 -->
+        <div class="form-group">
+          <label class="form-label">날짜</label>
+          <div class="date-split">
+            <input v-model="dateY" type="number" class="form-input" placeholder="년" @input="syncDate" />
+            <span class="date-sep">-</span>
+            <input v-model="dateM" type="number" class="form-input" placeholder="월" @input="syncDate" />
+            <span class="date-sep">-</span>
+            <input v-model="dateD" type="number" class="form-input" placeholder="일" @input="syncDate" />
+          </div>
+        </div>
 
-      <p v-if="errMsg" style="font-size:13px;color:var(--expense)">{{ errMsg }}</p>
+        <!-- 금액 -->
+        <div class="form-group">
+          <label class="form-label">금액 (원)</label>
+          <input v-model="form.amount" type="number" class="form-input" placeholder="0" />
+        </div>
+
+        <!-- 카테고리 -->
+        <div class="form-group">
+          <label class="form-label">카테고리</label>
+          <div class="cat-grid">
+            <button v-for="c in (form.type==='income' ? incomeCats : expenseCats)"
+              :key="c.id" type="button"
+              :class="['cat-btn', form.category===c.name ? 'active' : '']"
+              @click="form.category = c.name">
+              <span class="cat-icon">{{ c.icon }}</span>
+              <span class="cat-label">{{ c.name }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 메모 -->
+        <div class="form-group">
+          <label class="form-label">메모 (선택)</label>
+          <input v-model="form.memo" type="text" class="form-input" placeholder="간단한 메모" />
+        </div>
+
+        <p v-if="errMsg" style="font-size:13px;color:var(--expense)">{{ errMsg }}</p>
+      </div>
 
       <div class="modal-ft">
         <button class="btn-primary" @click="save" :disabled="saving">
