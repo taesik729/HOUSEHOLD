@@ -121,33 +121,62 @@ mAdView.post(() -> {
 
 ---
 
-## 미해결: 수입/지출 토글 버튼이 특정 기기에서 안 보임 (원인 분석만 완료, 수정 미적용 — 2026-07-13)
+## ✅ 해결: 수입/지출 토글 버튼이 화면 크기 설정에 따라 안 보이는 문제 (2026-07-29)
 
-**증상**: "내역 추가" 모달 열었을 때 일부 기기(S24 등)에서 상단 제목이 화면 위로 잘리고, 그 아래 있어야 할 수입/지출 토글 버튼이 통째로 안 보임. S25 등 다른 기기에선 정상 표시됨. 에뮬레이터에서는 재현 안 됨.
+**증상**: 설정 > 디스플레이 > 화면 크게/작게를 크게 설정하면 "내역 추가" 모달에서 수입/지출 토글 버튼이 사라짐
 
-**과거 시도 이력** (모두 증상 대응이었고 근본 원인은 미해결로 추정):
+**근본 원인**: 화면 크기(display zoom)를 크게 하면 뷰포트가 작아지는데, `.modal`의 `max-height`가 광고 배너 padding-bottom을 고려하지 않아 모달이 화면 위로 튀어나감 → 수입/지출 버튼이 화면 밖 위쪽으로 밀려남
+
+**해결 방법**: 수입/지출 토글을 고정 헤더(`modal-fixed-hd`)로 분리하고, 날짜~메모만 스크롤되도록 구조 변경
+
+### 수정 파일 1: `src/components/LedgerModal.vue`
+
+```html
+<!-- 수정 전: 모달 전체가 스크롤 → 토글 버튼이 위로 밀려남 -->
+<div class="modal">
+  <div class="modal-hd">...</div>
+  <div class="type-toggle">수입/지출</div>  ← 스크롤로 밀려남
+  <div class="form-group">날짜</div>
+  ...
+  <div class="modal-ft">저장</div>
+</div>
+
+<!-- 수정 후: 토글은 고정, 날짜~메모만 스크롤 -->
+<div class="modal">
+  <div class="modal-fixed-hd">          ← 고정 (스크롤 안 됨)
+    <div class="modal-hd">...</div>
+    <div class="type-toggle">수입/지출</div>
+  </div>
+  <div class="modal-body">              ← 이 부분만 스크롤
+    <div class="form-group">날짜</div>
+    ...
+  </div>
+  <div class="modal-ft">저장</div>
+</div>
 ```
-7307e09 수입/지출 토글 → 모달 하단으로 이동
-1bc6cb1 수입/지출 토글 → 모달 상단으로 이동 (S24 가려짐 대응)
-054efa3 카테고리 그리드 높이 제한 + 스크롤
-8b1399b 날짜/금액 2열 그리드 분리
-61f09ae / df9e4a6 AdMob 배너 높이만큼 모달 하단 패딩 추가
-80d184a AdMob ADAPTIVE_BANNER + margin:60
-dc857a7 bannerAdSizeChanged를 post() 안으로 이동 (→ 위 "문제 2" 네이티브 타이밍 수정, 이미 반영됨)
+
+### 수정 파일 2: `src/assets/main.css`
+
+```css
+/* 수정 전 */
+.modal { padding: 24px 20px 0;
+         max-height: 92dvh; overflow-y: auto;
+         display: flex; flex-direction: column; gap: 14px; }
+
+/* 수정 후 */
+.modal { padding: 0;
+         max-height: calc(100dvh - var(--ad-banner-height, 0px) - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px) - 16px);
+         overflow: hidden;
+         display: flex; flex-direction: column; }
+
+.modal-fixed-hd { padding: 24px 20px 0; display: flex; flex-direction: column; gap: 14px;
+                  background: var(--bg-card); flex-shrink: 0; }
+
+.modal-body { flex: 1; overflow-y: auto; padding: 14px 20px 0;
+              display: flex; flex-direction: column; gap: 14px; }
 ```
-→ 토글 버튼 위치를 위/아래로 계속 옮기고 패딩만 조정한 흔적. 근본 원인 두 가지를 아직 안 건드림.
 
-**가설 (미검증, 실기기 확인 필요)**:
-
-1. **`dvh` 단위 미지원 WebView**: `src/assets/main.css`의 `.modal { max-height: 92dvh; ... }` — `dvh`(동적 뷰포트 높이)는 비교적 최신 CSS 단위라, 일부 기기의 Android System WebView 버전이 오래되면 이 선언 자체가 무효 처리됨 → `max-height` 제한이 통째로 사라지고, `.modal-overlay`가 `align-items: flex-end`(하단 고정)라 넘치는 콘텐츠(제목+토글)가 화면 위로 밀려나서 잘림. 에뮬레이터는 항상 최신 WebView라 재현 안 됨.
-2. **AdMob 배너 타이밍/기기별 높이 차이**: `App.vue`에서 `setTimeout(..., 3000)` 후에야 `AdMob.showBanner()` 호출 → 그 전까지 `--ad-banner-height`는 CSS 기본값 `0px`. 앱 실행 직후 3초 안에 모달을 열면 배너 높이 미반영 상태로 렌더링됨. 또한 `BannerAdSize.ADAPTIVE_BANNER`는 기기 화면 너비에 따라 실제 높이(대략 50~90px)가 달라짐 — 두 가지가 겹치면 기기마다 모달의 실사용 가능 높이가 다르게 계산됨.
-3. 위 두 가지가 겹치면(구형 WebView + 특정 배너 높이) 잘리는 정도가 기기마다 달라 보이는 것으로 추정.
-
-**다음에 실기기 테스트 가능할 때 검증 순서** (추측으로 바로 고치지 말 것):
-1. 문제 재현되는 기기(S24 등)에 USB 디버깅 연결 가능한지 우선 확인 — 안 되면 임시 디버그 패널 삽입 방식 사용 ([[project_sibling_apps]] MY_TRAVEL 사례 참고)
-2. `chrome://inspect`로 연결해서 `getComputedStyle(document.querySelector('.modal')).maxHeight` 값 확인 → `dvh` 무효 처리 여부 직접 확인
-3. 앱 켠 직후 3초 이내 모달 열어서 `--ad-banner-height` 값이 `0px`인 상태로 렌더링되는지 확인 (S25에서도 재현 가능한 조건)
-4. 두 원인 모두 확인되면 함께 수정: `.modal`에 `max-height: 92vh;` 폴백 추가(dvh 다음 줄에) + `--ad-banner-height` 초기값을 0 대신 예상 배너 높이(예: 60px)로 두거나, 모달 높이 계산에서 배너 패딩 영향을 분리하는 방식 검토
+> **MY_TRAVEL에도 동일 패턴 적용 필요** — 모달 구조가 비슷하면 같은 방식으로 수정할 것 (CLAUDE.md에 기록 완료)
 
 ---
 
@@ -156,13 +185,13 @@ dc857a7 bannerAdSizeChanged를 post() 안으로 이동 (→ 위 "문제 2" 네�
 ### Gradle 버전 조합 (검증 완료)
 - **Gradle**: `8.7` (`gradle-wrapper.properties`)
 - **AGP**: `8.3.0` (`build.gradle`)
-- **targetSdkVersion**: `35` (`variables.gradle`)
+- **targetSdkVersion**: `36` (`variables.gradle`) — Android 16 대응 (2026-07-29)
 - **Gradle JDK**: Android Studio Embedded JDK (jbr)
 
 ### 버전 코드
 - `android/app/build.gradle` 의 `versionCode` 업로드마다 +1 증가 필요
-- 현재: `versionCode 14` (versionName 1.0.2)
-- 이력: 12(1.0.1 배너 위치 수정) → 13 → 14(모달 저장버튼 가림·하단네비 가림 수정)
+- 현재: `versionCode 17` (versionName 1.0.3)
+- 이력: 12(1.0.1 배너 위치 수정) → 13 → 14(모달 저장버튼 가림·하단네비 가림 수정) → 15 → 16 → 17(화면 크기 설정 시 수입/지출 버튼 가림 수정, targetSdkVersion 36, setTextZoom 100)
 
 ### 키스토어
 - 경로: `C:\work\FARM\HOUSEHOLD\household-key.jks`
