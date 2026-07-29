@@ -190,7 +190,8 @@ body {
                  padding-bottom: calc(var(--ad-banner-height, 0px) + env(safe-area-inset-bottom, 0px)); }
 .modal         { background: var(--bg-card); border-radius: 24px 24px 0 0;
                  width: 100%; max-width: 640px; padding: 24px 20px 0;
-                 max-height: 92dvh; overflow-y: auto;
+                 max-height: calc(100dvh - var(--ad-banner-height, 0px) - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px) - 16px);
+                 overflow-y: auto;
                  display: flex; flex-direction: column; gap: 14px; }
 .modal-hd      { display: flex; justify-content: space-between; align-items: center; }
 .modal-title   { font-size: 17px; font-weight: 700; }
