@@ -1,6 +1,10 @@
 {
   "rewrites": [
     { "source": "/.well-known/(.*)", "destination": "/.well-known/$1" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    { "path": "/api/keep-alive", "schedule": "0 9 * * *" }
   ]
 }
